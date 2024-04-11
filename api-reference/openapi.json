@@ -1,1 +1,1258 @@
-{"openapi":"3.0.0","info":{"title":"ScalerCommerce API documentation","version":"0.0.3","license":{"name":"MIT","url":"https://github.com/scalerit/api-server"}},"servers":[{"url":"http://localhost:4030/v1"},{"url":"https://api.scalerit.com/v1"}],"paths":{"/auth/register":{"post":{"summary":"Register as user","tags":["Auth"],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["name","email","password"],"properties":{"name":{"type":"string"},"email":{"type":"string","format":"email","description":"must be unique"},"password":{"type":"string","format":"password","minLength":8,"description":"At least one number and one letter"}},"example":{"name":"fake name","email":"fake@example.com","password":"password1"}}}}},"responses":{"201":{"description":"Created","content":{"application/json":{"schema":{"type":"object","properties":{"user":{"$ref":"#/components/schemas/User"},"tokens":{"$ref":"#/components/schemas/AuthTokens"}}}}}},"400":{"$ref":"#/components/responses/DuplicateEmail"}}}},"/auth/login":{"post":{"summary":"Login","tags":["Auth"],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["email","password"],"properties":{"email":{"type":"string","format":"email"},"password":{"type":"string","format":"password"}},"example":{"email":"fake@example.com","password":"password1"}}}}},"responses":{"200":{"description":"OK","content":{"application/json":{"schema":{"type":"object","properties":{"user":{"$ref":"#/components/schemas/User"},"tokens":{"$ref":"#/components/schemas/AuthTokens"}}}}}},"401":{"description":"Invalid email or password","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"},"example":{"code":401,"message":"Invalid email or password"}}}}}}},"/auth/logout":{"post":{"summary":"Logout","tags":["Auth"],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["refreshToken"],"properties":{"refreshToken":{"type":"string"}},"example":{"refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}}}}},"responses":{"204":{"description":"No content"},"404":{"$ref":"#/components/responses/NotFound"}}}},"/auth/refresh-tokens":{"post":{"summary":"Refresh auth tokens","tags":["Auth"],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["refreshToken"],"properties":{"refreshToken":{"type":"string"}},"example":{"refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}}}}},"responses":{"200":{"description":"OK","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AuthTokens"}}}},"401":{"$ref":"#/components/responses/Unauthorized"}}}},"/auth/forgot-password":{"post":{"summary":"Forgot password","description":"An email will be sent to reset password.","tags":["Auth"],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["email"],"properties":{"email":{"type":"string","format":"email"}},"example":{"email":"fake@example.com"}}}}},"responses":{"204":{"description":"No content"},"404":{"$ref":"#/components/responses/NotFound"}}}},"/auth/reset-password":{"post":{"summary":"Reset password","tags":["Auth"],"parameters":[{"in":"query","name":"token","required":true,"schema":{"type":"string"},"description":"The reset password token"}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["password"],"properties":{"password":{"type":"string","format":"password","minLength":8,"description":"At least one number and one letter"}},"example":{"password":"password1"}}}}},"responses":{"204":{"description":"No content"},"401":{"description":"Password reset failed","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"},"example":{"code":401,"message":"Password reset failed"}}}}}}},"/auth/send-verification-email":{"post":{"summary":"Send verification email","description":"An email will be sent to verify email.","tags":["Auth"],"security":[{"bearerAuth":[]}],"responses":{"204":{"description":"No content"},"401":{"$ref":"#/components/responses/Unauthorized"}}}},"/auth/verify-email":{"post":{"summary":"verify email","tags":["Auth"],"parameters":[{"in":"query","name":"token","required":true,"schema":{"type":"string"},"description":"The verify email token"}],"responses":{"204":{"description":"No content"},"401":{"description":"verify email failed","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"},"example":{"code":401,"message":"verify email failed"}}}}}}},"/{shopId}":{"post":{"tags":["File"],"summary":"POST {shopId}","parameters":[{"name":"shopId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}},"get":{"tags":["File"],"summary":"GET {shopId}","parameters":[{"name":"shopId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/{shopId}/{fileId}":{"get":{"tags":["File"],"summary":"GET {shopId}/{fileId}","parameters":[{"name":"shopId","in":"path","required":false},{"name":"fileId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}},"delete":{"tags":["File"],"summary":"DELETE {shopId}/{fileId}","parameters":[{"name":"shopId","in":"path","required":false},{"name":"fileId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/create_product_type":{"post":{"tags":["Product"],"summary":"POST create_product_type","responses":{"200":{"description":"OK"}}}},"/update_product_type/{productTypeId}":{"post":{"tags":["Product"],"summary":"POST update_product_type/{productTypeId}","parameters":[{"name":"productTypeId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/delete_product_type/{productTypeId}":{"post":{"tags":["Product"],"summary":"POST delete_product_type/{productTypeId}","parameters":[{"name":"productTypeId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/get_product_type/{productTypeId}":{"get":{"tags":["Product"],"summary":"GET get_product_type/{productTypeId}","parameters":[{"name":"productTypeId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/add_product_field/{productTypeId}":{"post":{"tags":["Product"],"summary":"POST add_product_field/{productTypeId}","parameters":[{"name":"productTypeId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/update_product_field/{productTypeId}/{productFieldId}":{"post":{"tags":["Product"],"summary":"POST update_product_field/{productTypeId}/{productFieldId}","parameters":[{"name":"productTypeId","in":"path","required":false},{"name":"productFieldId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/delete_product_field/{productTypeId}/{productFieldId}":{"post":{"tags":["Product"],"summary":"POST delete_product_field/{productTypeId}/{productFieldId}","parameters":[{"name":"productTypeId","in":"path","required":false},{"name":"productFieldId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/create_product":{"post":{"tags":["Product"],"summary":"POST create_product","responses":{"200":{"description":"OK"}}}},"/update_product/{productId}":{"post":{"tags":["Product"],"summary":"POST update_product/{productId}","parameters":[{"name":"productId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/delete_product/{productId}":{"post":{"tags":["Product"],"summary":"POST delete_product/{productId}","parameters":[{"name":"productId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/get_products/{shopId}":{"get":{"tags":["Product"],"summary":"GET get_products/{shopId}","parameters":[{"name":"shopId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/get_product/{productId}":{"get":{"tags":["Product"],"summary":"GET get_product/{productId}","parameters":[{"name":"productId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/create_shop":{"post":{"tags":["Shop"],"summary":"POST create_shop","responses":{"200":{"description":"OK"}}}},"/update_shop/{shopId}":{"post":{"tags":["Shop"],"summary":"POST update_shop/{shopId}","parameters":[{"name":"shopId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/delete_shop/{shopId}":{"post":{"tags":["Shop"],"summary":"POST delete_shop/{shopId}","parameters":[{"name":"shopId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/get_shops":{"get":{"tags":["Shop"],"summary":"GET get_shops","responses":{"200":{"description":"OK"}}}},"/get_shop/{shopId}":{"get":{"tags":["Shop"],"summary":"GET get_shop/{shopId}","parameters":[{"name":"shopId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/create_api_token":{"post":{"tags":["ShopSettings"],"summary":"POST create_api_token","responses":{"200":{"description":"OK"}}}},"/delete_api_token/{tokenId}":{"post":{"tags":["ShopSettings"],"summary":"POST delete_api_token/{tokenId}","parameters":[{"name":"tokenId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/get_api_tokens/{shopId}":{"get":{"tags":["ShopSettings"],"summary":"GET get_api_tokens/{shopId}","parameters":[{"name":"shopId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/cart/add_to_cart":{"post":{"summary":"Add to cart","tags":["Cart"],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"object","required":["cart","product","quantity","attributes"],"properties":{"cart":{"type":"string","description":"Cart ID"},"product":{"type":"string","description":"Product ID"},"quantity":{"type":"number","description":"Quantity"},"attributes":{"type":"array","description":"Attributes"},"example":{"cart":"5f2c2e5d8b0b3e0e1c2b6f2b","product":"5f2c2e5d8b0b3e0e1c2b6f2b","quantity":1,"attributes":[{"color":"red"},{"size":"XL"}]}}}}}},"responses":{"201":{"description":"Created","content":{"application/json":{"schema":{"type":"object","properties":{"sum":{"type":"number","description":"Sum"},"products":{"type":"array","description":"Products"},"coupons":{"type":"array","description":"Coupons"},"expires":{"type":"date","description":"Expires"},"example":{"sum":100.01,"products":[{"product":{"...":null},"quantity":1,"attributes":[{"color":"red"},{"size":"XL"}]}],"coupons":[{"coupon":{"...":null},"quantity":1}],"expires":"2020-08-08T00:00:00.000Z"}}}}}}}}},"/cart/remove_from_cart":{"post":{"tags":["Cart"],"summary":"POST remove_from_cart","responses":{"200":{"description":"OK"}}}},"/get_cart/{cartId}":{"get":{"tags":["Cart"],"summary":"GET get_cart/{cartId}","parameters":[{"name":"cartId","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/create_session":{"post":{"tags":["ShopSession"],"summary":"POST create_session","responses":{"200":{"description":"OK"}}}},"/login_session":{"post":{"tags":["ShopSession"],"summary":"POST login_session","responses":{"200":{"description":"OK"}}}},"/get_session/{session}":{"get":{"tags":["ShopSession"],"summary":"GET get_session/{session}","parameters":[{"name":"session","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/logout_session/{session}":{"post":{"tags":["ShopSession"],"summary":"POST logout_session/{session}","parameters":[{"name":"session","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}},"/destroy_session/{session}":{"post":{"tags":["ShopSession"],"summary":"POST destroy_session/{session}","parameters":[{"name":"session","in":"path","required":false}],"responses":{"200":{"description":"OK"}}}}},"components":{"schemas":{"User":{"type":"object","properties":{"id":{"type":"string"},"email":{"type":"string","format":"email"},"name":{"type":"string"},"role":{"type":"string","enum":["user","admin"]}},"example":{"id":"5ebac534954b54139806c112","email":"fake@example.com","name":"fake name","role":"user"}},"Token":{"type":"object","properties":{"token":{"type":"string"},"expires":{"type":"string","format":"date-time"}},"example":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZWJhYzUzNDk1NGI1NDEzOTgwNmMxMTIiLCJpYXQiOjE1ODkyOTg0ODQsImV4cCI6MTU4OTMwMDI4NH0.m1U63blB0MLej_WfB7yC2FTMnCziif9X8yzwDEfJXAg","expires":"2020-05-12T16:18:04.793Z"}},"AuthTokens":{"type":"object","properties":{"access":{"$ref":"#/components/schemas/Token"},"refresh":{"$ref":"#/components/schemas/Token"}}},"Error":{"type":"object","properties":{"code":{"type":"number"},"message":{"type":"string"}}}},"responses":{"DuplicateEmail":{"description":"Email already taken","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"},"example":{"code":400,"message":"Email already taken"}}}},"Unauthorized":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"},"example":{"code":401,"message":"Please authenticate"}}}},"Forbidden":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"},"example":{"code":403,"message":"Forbidden"}}}},"NotFound":{"description":"Not found","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"},"example":{"code":404,"message":"Not found"}}}}},"securitySchemes":{"bearerAuth":{"type":"http","scheme":"bearer","bearerFormat":"JWT"}}},"tags":[{"name":"Auth","description":"Authentication"},{"name":"File","description":"File management and retrieval"},{"name":"Product","description":"Product management and retrieval"},{"name":"Shop","description":"Shop management and retrieval"},{"name":"ShopSettings","description":"ShopSettings management and retrieval"},{"name":"Cart","description":"Cart management and retrieval"},{"name":"ShopSession","description":"ShopSession management and retrieval"}]}
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "ScalerCommerce API documentation",
+        "version": "0.0.3",
+        "license": {
+            "name": "MIT",
+            "url": "https://github.com/scalerit/api-server"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:4030/v1"
+        },
+        {
+            "url": "https://api.scalerit.com/v1"
+        }
+    ],
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "summary": "Register as user",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "description": "must be unique"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8,
+                                        "description": "At least one number and one letter"
+                                    }
+                                },
+                                "example": {
+                                    "name": "fake name",
+                                    "email": "fake@example.com",
+                                    "password": "password1"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "tokens": {
+                                            "$ref": "#/components/schemas/AuthTokens"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/DuplicateEmail"
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "summary": "Login",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "example": {
+                                    "email": "fake@example.com",
+                                    "password": "password1"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "tokens": {
+                                            "$ref": "#/components/schemas/AuthTokens"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid email or password",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "code": 401,
+                                    "message": "Invalid email or password"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "summary": "Logout",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "refreshToken"
+                                ],
+                                "properties": {
+                                    "refreshToken": {
+                                        "type": "string"
+                                    }
+                                },
+                                "example": {
+                                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
+                }
+            }
+        },
+        "/auth/refresh-tokens": {
+            "post": {
+                "summary": "Refresh auth tokens",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "refreshToken"
+                                ],
+                                "properties": {
+                                    "refreshToken": {
+                                        "type": "string"
+                                    }
+                                },
+                                "example": {
+                                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthTokens"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                }
+            }
+        },
+        "/auth/forgot-password": {
+            "post": {
+                "summary": "Forgot password",
+                "description": "An email will be sent to reset password.",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "example": {
+                                    "email": "fake@example.com"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "post": {
+                "summary": "Reset password",
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The reset password token"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "password"
+                                ],
+                                "properties": {
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8,
+                                        "description": "At least one number and one letter"
+                                    }
+                                },
+                                "example": {
+                                    "password": "password1"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "description": "Password reset failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "code": 401,
+                                    "message": "Password reset failed"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/send-verification-email": {
+            "post": {
+                "summary": "Send verification email",
+                "description": "An email will be sent to verify email.",
+                "tags": [
+                    "Auth"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                }
+            }
+        },
+        "/auth/verify-email": {
+            "post": {
+                "summary": "verify email",
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The verify email token"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "description": "verify email failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "code": 401,
+                                    "message": "verify email failed"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{shopId}": {
+            "post": {
+                "tags": [
+                    "File"
+                ],
+                "summary": "POST {shopId}",
+                "parameters": [
+                    {
+                        "name": "shopId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "File"
+                ],
+                "summary": "GET {shopId}",
+                "parameters": [
+                    {
+                        "name": "shopId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/{shopId}/{fileId}": {
+            "get": {
+                "tags": [
+                    "File"
+                ],
+                "summary": "GET {shopId}/{fileId}",
+                "parameters": [
+                    {
+                        "name": "shopId",
+                        "in": "path",
+                        "required": false
+                    },
+                    {
+                        "name": "fileId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "File"
+                ],
+                "summary": "DELETE {shopId}/{fileId}",
+                "parameters": [
+                    {
+                        "name": "shopId",
+                        "in": "path",
+                        "required": false
+                    },
+                    {
+                        "name": "fileId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/create_product_type": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "POST create_product_type",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/update_product_type/{productTypeId}": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "POST update_product_type/{productTypeId}",
+                "parameters": [
+                    {
+                        "name": "productTypeId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/delete_product_type/{productTypeId}": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "POST delete_product_type/{productTypeId}",
+                "parameters": [
+                    {
+                        "name": "productTypeId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/get_product_type/{productTypeId}": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "GET get_product_type/{productTypeId}",
+                "parameters": [
+                    {
+                        "name": "productTypeId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/add_product_field/{productTypeId}": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "POST add_product_field/{productTypeId}",
+                "parameters": [
+                    {
+                        "name": "productTypeId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/update_product_field/{productTypeId}/{productFieldId}": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "POST update_product_field/{productTypeId}/{productFieldId}",
+                "parameters": [
+                    {
+                        "name": "productTypeId",
+                        "in": "path",
+                        "required": false
+                    },
+                    {
+                        "name": "productFieldId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/delete_product_field/{productTypeId}/{productFieldId}": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "POST delete_product_field/{productTypeId}/{productFieldId}",
+                "parameters": [
+                    {
+                        "name": "productTypeId",
+                        "in": "path",
+                        "required": false
+                    },
+                    {
+                        "name": "productFieldId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/create_product": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "POST create_product",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/update_product/{productId}": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "POST update_product/{productId}",
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/delete_product/{productId}": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "POST delete_product/{productId}",
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/get_products/{shopId}": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "GET get_products/{shopId}",
+                "parameters": [
+                    {
+                        "name": "shopId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/get_product/{productId}": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "GET get_product/{productId}",
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/create_shop": {
+            "post": {
+                "tags": [
+                    "Shop"
+                ],
+                "summary": "POST create_shop",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/update_shop/{shopId}": {
+            "post": {
+                "tags": [
+                    "Shop"
+                ],
+                "summary": "POST update_shop/{shopId}",
+                "parameters": [
+                    {
+                        "name": "shopId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/delete_shop/{shopId}": {
+            "post": {
+                "tags": [
+                    "Shop"
+                ],
+                "summary": "POST delete_shop/{shopId}",
+                "parameters": [
+                    {
+                        "name": "shopId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/get_shops": {
+            "get": {
+                "tags": [
+                    "Shop"
+                ],
+                "summary": "GET get_shops",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/get_shop/{shopId}": {
+            "get": {
+                "tags": [
+                    "Shop"
+                ],
+                "summary": "GET get_shop/{shopId}",
+                "parameters": [
+                    {
+                        "name": "shopId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/create_api_token": {
+            "post": {
+                "tags": [
+                    "ShopSettings"
+                ],
+                "summary": "POST create_api_token",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/delete_api_token/{tokenId}": {
+            "post": {
+                "tags": [
+                    "ShopSettings"
+                ],
+                "summary": "POST delete_api_token/{tokenId}",
+                "parameters": [
+                    {
+                        "name": "tokenId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/get_api_tokens/{shopId}": {
+            "get": {
+                "tags": [
+                    "ShopSettings"
+                ],
+                "summary": "GET get_api_tokens/{shopId}",
+                "parameters": [
+                    {
+                        "name": "shopId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/cart/add_to_cart": {
+            "post": {
+                "summary": "Add to cart",
+                "tags": [
+                    "Cart"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "cart",
+                                    "product",
+                                    "quantity",
+                                    "attributes"
+                                ],
+                                "properties": {
+                                    "cart": {
+                                        "type": "string",
+                                        "description": "Cart ID"
+                                    },
+                                    "product": {
+                                        "type": "string",
+                                        "description": "Product ID"
+                                    },
+                                    "quantity": {
+                                        "type": "number",
+                                        "description": "Quantity"
+                                    },
+                                    "attributes": {
+                                        "type": "array",
+                                        "description": "Attributes"
+                                    },
+                                    "example": {
+                                        "cart": "5f2c2e5d8b0b3e0e1c2b6f2b",
+                                        "product": "5f2c2e5d8b0b3e0e1c2b6f2b",
+                                        "quantity": 1,
+                                        "attributes": [
+                                            {
+                                                "color": "red"
+                                            },
+                                            {
+                                                "size": "XL"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "sum": {
+                                            "type": "number",
+                                            "description": "Sum"
+                                        },
+                                        "products": {
+                                            "type": "array",
+                                            "description": "Products"
+                                        },
+                                        "coupons": {
+                                            "type": "array",
+                                            "description": "Coupons"
+                                        },
+                                        "expires": {
+                                            "type": "date",
+                                            "description": "Expires"
+                                        },
+                                        "example": {
+                                            "sum": 100.01,
+                                            "products": [
+                                                {
+                                                    "product": {
+                                                        "...": null
+                                                    },
+                                                    "quantity": 1,
+                                                    "attributes": [
+                                                        {
+                                                            "color": "red"
+                                                        },
+                                                        {
+                                                            "size": "XL"
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "coupons": [
+                                                {
+                                                    "coupon": {
+                                                        "...": null
+                                                    },
+                                                    "quantity": 1
+                                                }
+                                            ],
+                                            "expires": "2020-08-08T00:00:00.000Z"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/cart/remove_from_cart": {
+            "post": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "POST remove_from_cart",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/get_cart/{cartId}": {
+            "get": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "GET get_cart/{cartId}",
+                "parameters": [
+                    {
+                        "name": "cartId",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/create_session": {
+            "post": {
+                "tags": [
+                    "ShopSession"
+                ],
+                "summary": "POST create_session",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/login_session": {
+            "post": {
+                "tags": [
+                    "ShopSession"
+                ],
+                "summary": "POST login_session",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/get_session/{session}": {
+            "get": {
+                "tags": [
+                    "ShopSession"
+                ],
+                "summary": "GET get_session/{session}",
+                "parameters": [
+                    {
+                        "name": "session",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/logout_session/{session}": {
+            "post": {
+                "tags": [
+                    "ShopSession"
+                ],
+                "summary": "POST logout_session/{session}",
+                "parameters": [
+                    {
+                        "name": "session",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/destroy_session/{session}": {
+            "post": {
+                "tags": [
+                    "ShopSession"
+                ],
+                "summary": "POST destroy_session/{session}",
+                "parameters": [
+                    {
+                        "name": "session",
+                        "in": "path",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "user",
+                            "admin"
+                        ]
+                    }
+                },
+                "example": {
+                    "id": "5ebac534954b54139806c112",
+                    "email": "fake@example.com",
+                    "name": "fake name",
+                    "role": "user"
+                }
+            },
+            "Token": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    },
+                    "expires": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "example": {
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZWJhYzUzNDk1NGI1NDEzOTgwNmMxMTIiLCJpYXQiOjE1ODkyOTg0ODQsImV4cCI6MTU4OTMwMDI4NH0.m1U63blB0MLej_WfB7yC2FTMnCziif9X8yzwDEfJXAg",
+                    "expires": "2020-05-12T16:18:04.793Z"
+                }
+            },
+            "AuthTokens": {
+                "type": "object",
+                "properties": {
+                    "access": {
+                        "$ref": "#/components/schemas/Token"
+                    },
+                    "refresh": {
+                        "$ref": "#/components/schemas/Token"
+                    }
+                }
+            },
+            "Error": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "number"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "responses": {
+            "DuplicateEmail": {
+                "description": "Email already taken",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "example": {
+                            "code": 400,
+                            "message": "Email already taken"
+                        }
+                    }
+                }
+            },
+            "Unauthorized": {
+                "description": "Unauthorized",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "example": {
+                            "code": 401,
+                            "message": "Please authenticate"
+                        }
+                    }
+                }
+            },
+            "Forbidden": {
+                "description": "Forbidden",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "example": {
+                            "code": 403,
+                            "message": "Forbidden"
+                        }
+                    }
+                }
+            },
+            "NotFound": {
+                "description": "Not found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "example": {
+                            "code": 404,
+                            "message": "Not found"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Authentication"
+        },
+        {
+            "name": "File",
+            "description": "File management and retrieval"
+        },
+        {
+            "name": "Product",
+            "description": "Product management and retrieval"
+        },
+        {
+            "name": "Shop",
+            "description": "Shop management and retrieval"
+        },
+        {
+            "name": "ShopSettings",
+            "description": "ShopSettings management and retrieval"
+        },
+        {
+            "name": "Cart",
+            "description": "Cart management and retrieval"
+        },
+        {
+            "name": "ShopSession",
+            "description": "ShopSession management and retrieval"
+        }
+    ]
+}
